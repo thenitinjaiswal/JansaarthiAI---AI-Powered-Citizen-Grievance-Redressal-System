@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Audio Insights</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #111827;
+      margin: 0;
+      padding: 2rem;
+    }
+   
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: #6b7280;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    section {
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .upload-label {
+      display: inline-block;
+      padding: 1rem 2rem;
+      border: 2px dashed #cbd5e1;
+      border-radius: 0.75rem;
+      background-color: #f1f5f9;
+      cursor: pointer;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<header class="flex items-center justify-between px-6 py-4 bg-white shadow-md rounded-xl mb-8">
+  <div class="flex items-center space-x-4">
+    <h2 class="text-2xl font-bold text-indigo-700">🔊 JansaarthiAI  :- AI-Powered Citizen Grievance Redressal System</h2>
+  </div>
+
+  
+</header>
+
+
+
+<section class="flex flex-col items-center justify-center bg-white shadow-md rounded-xl p-8 space-y-6 max-w-md mx-auto mt-10">
+  <h1 class="text-2xl font-bold text-gray-800">🎧 Audio Analysis</h1>
+
+  <label class="upload-label text-center w-full cursor-pointer transition duration-300 hover:bg-blue-100">
+    <span class="block text-gray-600 mb-1">Drag and drop or browse</span>
+    <input type="file" id="audioFile" accept=".flac">
+  </label>
+
+  <button 
+    onclick="uploadAudio()" 
+    class="w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
+  >
+    Analyze
+  </button>
+</section>
+
+
+ <section class="bg-white p-8 rounded-2xl shadow-md mt-10 max-w-4xl mx-auto space-y-8">
+  <div>
+    <h3 class="text-2xl font-bold text-gray-800 mb-2">📝 Transcript</h3>
+    <p id="transcript" class="text-gray-700 leading-relaxed">
+      The transcript of the audio file will appear here after processing.
+    </p>
+  </div>
+
+  <div>
+    <h3 class="text-2xl font-bold text-gray-800 mb-2">💬 Sentiment Analysis</h3>
+    <p id="sentiment" class="text-blue-600 font-medium">
+      Loading sentiment...
+    </p>
+  </div>
+
+  <div>
+    <h3 class="text-2xl font-bold text-gray-800 mb-4">🌍 Societal Ripple Score (SRS)</h3>
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-100 to-purple-100 rounded-2xl p-6 shadow-lg border border-indigo-200">
+      <h4 class="text-lg font-semibold text-indigo-700 mb-1">SRS Score</h4>
+      <p id="srs" class="text-4xl font-extrabold text-indigo-900 tracking-tight">Loading...</p>
+      <p id="srsLabel" class="text-sm text-indigo-700 mt-2 italic">Evaluating societal impact...</p>
+    </div>
+  </div>
+</section>
+
+<section class="bg-white p-8 rounded-2xl shadow-xl mt-10 max-w-3xl mx-auto">
+  <h3 class="text-2xl font-bold text-center text-indigo-700 mb-8">🎆 Emotion Analysis</h3>
+
+  <div class="flex flex-col items-center w-full">
+    <div class="space-y-6 w-full max-w-xl">
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="font-semibold text-red-600">Anger</span>
+          <span id="angerValue" class="text-sm font-medium text-gray-700">0.00</span>
+        </div>
+        <div class="w-full bg-red-100 rounded-full h-3">
+          <div id="angerBar" class="bg-red-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="font-semibold text-yellow-600">Disgust</span>
+          <span id="disgustValue" class="text-sm font-medium text-gray-700">0.00</span>
+        </div>
+        <div class="w-full bg-yellow-100 rounded-full h-3">
+          <div id="disgustBar" class="bg-yellow-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="font-semibold text-purple-600">Fear</span>
+          <span id="fearValue" class="text-sm font-medium text-gray-700">0.00</span>
+        </div>
+        <div class="w-full bg-purple-100 rounded-full h-3">
+          <div id="fearBar" class="bg-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="font-semibold text-green-600">Joy</span>
+          <span id="joyValue" class="text-sm font-medium text-gray-700">0.00</span>
+        </div>
+        <div class="w-full bg-green-100 rounded-full h-3">
+          <div id="joyBar" class="bg-green-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="font-semibold text-blue-600">Sadness</span>
+          <span id="sadnessValue" class="text-sm font-medium text-gray-700">0.00</span>
+        </div>
+        <div class="w-full bg-blue-100 rounded-full h-3">
+          <div id="sadnessBar" class="bg-blue-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="bg-white p-8 rounded-2xl shadow-lg mt-10 max-w-5xl mx-auto">
+  <h3 class="text-2xl font-bold text-center text-indigo-700 mb-10">📊 Emotion Breakdown</h3>
+  
+  <div class="flex flex-col sm:flex-row gap-10 justify-center items-center">
+    
+    <!-- Pie Chart Container -->
+    <div class="w-full sm:w-1/2 flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl shadow-md">
+      <canvas id="emotionPie" class="w-[250px] h-[250px]"></canvas>
+    </div>
+    
+    <!-- Bar Chart Container -->
+    <div class="w-full sm:w-1/2 flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md">
+      <canvas id="emotionBar" class="w-[300px] h-[250px]"></canvas>
+    </div>
+
+  </div>
+</section>
+
+    
+    
+  <script>
+    async function uploadAudio() {
+      const fileInput = document.getElementById('audioFile');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select a file!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('audio', file);
+
+      const response = await fetch('http://127.0.0.1:5000/analyze', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      document.getElementById('transcript').innerText = result.transcript;
+      document.getElementById('sentiment').innerText = `Overall Sentiment: ${result.sentiment.label} (Score: ${result.sentiment.score})`;
+
+      const srsScore = result.srs;
+      document.getElementById('srs').innerText = `${srsScore}`;
+      document.getElementById('srsLabel').innerText =
+        srsScore > 75 ? "High societal impact 🌟" :
+        srsScore > 50 ? "Moderate positive impact 👍" :
+        "Low impact 👀";
+
+      const emotionData = result.emotion;
+      const labels = Object.keys(emotionData);
+      const values = Object.values(emotionData);
+
+      new Chart(document.getElementById('emotionPie'), {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Emotions',
+            data: values,
+            backgroundColor: [
+              '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#10b981'
+            ]
+          }]
+        }
+      });
+
+      new Chart(document.getElementById('emotionBar'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Emotion Intensity',
+            data: values,
+            backgroundColor: '#60a5fa'
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 1
+            }
+          }
+        }
+      });
+
+      // Update progress bars
+      document.getElementById('angerValue').innerText = emotionData.anger.toFixed(2);
+      document.getElementById('angerBar').style.width = `${emotionData.anger * 100}%`;
+
+      document.getElementById('disgustValue').innerText = emotionData.disgust.toFixed(2);
+      document.getElementById('disgustBar').style.width = `${emotionData.disgust * 100}%`;
+
+      document.getElementById('fearValue').innerText = emotionData.fear.toFixed(2);
+      document.getElementById('fearBar').style.width = `${emotionData.fear * 100}%`;
+
+      document.getElementById('joyValue').innerText = emotionData.joy.toFixed(2);
+      document.getElementById('joyBar').style.width = `${emotionData.joy * 100}%`;
+
+      document.getElementById('sadnessValue').innerText = emotionData.sadness.toFixed(2);
+      document.getElementById('sadnessBar').style.width = `${emotionData.sadness * 100}%`;
+    }
+  </script>
+</body>
+</html>
